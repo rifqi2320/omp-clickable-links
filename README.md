@@ -1,6 +1,6 @@
 # omp-clickable-links
 
-A dependency-free omp extension that adds clickable **Open links: 1 2 …** entries beneath assistant replies containing web URLs. Click a number, review the destination, and confirm to open it in your default browser. It does not depend on terminal-native hyperlinks, and never passes a URL through a shell.
+A dependency-free omp extension that adds clickable **Open links: 1 2 …** entries beneath assistant replies containing web URLs. Click a number to open it in your default browser. It does not depend on terminal-native hyperlinks, and never passes a URL through a shell.
 
 ## Install
 
@@ -16,7 +16,7 @@ Restart omp after installation. The extension enables assistant reply renderers 
 
 - Click the numbered entry beneath an assistant reply; the original link text is not itself intercepted. Only HTTP and HTTPS URLs are offered. Repeated URLs are deduplicated within each text block.
 - Links in older terminal scrollback cannot be clicked in place. Press Alt+O twice to open omp's link browser, then click the entry or use its letter hint.
-- The confirmation displays the full destination. URLs are untrusted; confirm only destinations you recognize. URLs with embedded credentials are rejected.
+- URLs are untrusted and open without confirmation. Check the destination in the reply before clicking. URLs with embedded credentials are rejected.
 - This handles assistant text in omp's plain terminal interface, not arbitrary tool output or Tern's native interface. Explicitly disabling `tui.mouse` prevents direct clicks; Alt+O still offers keyboard selection. Explicitly disabling `extensionRenderers.assistantText` disables the plugin's link entries.
 - Runs `/usr/bin/open` on macOS or `xdg-open` on Linux. The browser may follow redirects after opening.
 
