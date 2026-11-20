@@ -29,6 +29,36 @@ export function linksIn(text) {
   return [...found];
 }
 
+export function clickableMarkdown(text) {
+  const rewritten = new Set();
+  let fence;
+  const lines = text.split("\n").map(line => {
+    const marker = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+    if (fence) {
+      if (marker && marker[1][0] === fence[0] && marker[1].length >= fence.length && !marker[2].trim()) fence = undefined;
+      return line;
+    }
+    if (marker) {
+      fence = marker[1];
+      return line;
+    }
+    return line.replace(/(`+)(.*?)\1|(?<!!)(?<!\\)\[([^\]\n]+)\]\((https?:\/\/[^\s)]+(?:\([^()\s]*\)[^\s)]*)*)\)/gi,
+      (match, ticks, _code, label, destination) => {
+        if (ticks) return match;
+        const url = webUrl(destination);
+        if (!url) return match;
+        rewritten.add(url);
+        return `[${label}](${scheme}:${encodeURIComponent(url)})`;
+      });
+  });
+  const remaining = linksIn(text).filter(url => !rewritten.has(url));
+  let result = lines.join("\n");
+  if (remaining.length) result += "\n\nOpen links: " + remaining.map((url, i) =>
+    `[${i + 1}](${scheme}:${encodeURIComponent(url)})`
+  ).join(" ");
+  return result;
+}
+
 export default function clickableLinks(pi) {
   for (const [name, value] of [
     ["extensionRenderers.assistantText", true],
@@ -43,11 +73,7 @@ export default function clickableLinks(pi) {
   pi.on("session_start", (_event, ctx) => { ui = ctx.ui; });
   pi.registerAssistantTextRenderer(({ text }) => {
     if (!ui?.getLinkClicksAvailable()) return;
-    const urls = linksIn(text);
-    if (!urls.length) return;
-    return text + "\n\nOpen links: " + urls.map((url, i) =>
-      `[${i + 1}](${scheme}:${encodeURIComponent(url)})`
-    ).join(" ");
+    return clickableMarkdown(text);
   });
   pi.on("link_activate", async ({ url }, ctx) => {
     let target;
