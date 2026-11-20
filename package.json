@@ -1,0 +1,9 @@
+{
+  "name": "omp-clickable-links",
+  "version": "1.0.0",
+  "description": "Enable terminal-native hyperlinks in omp without dependencies",
+  "license": "MIT",
+  "omp": {
+    "extensions": ["./index.js"]
+  }
+}
