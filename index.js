@@ -57,7 +57,7 @@ export default function clickableLinks(pi) {
     } catch {
       return;
     }
-    if (!target || !(await ctx.ui.confirm("Open this link in your browser?", target))) return;
+    if (!target) return;
     const command = process.platform === "darwin" ? "/usr/bin/open" :
       process.platform === "linux" ? "xdg-open" : undefined;
     if (!command) return ctx.ui.notify("Unsupported operating system", "error");
