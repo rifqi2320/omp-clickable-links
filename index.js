@@ -16,21 +16,7 @@ export function webUrl(value) {
   }
 }
 
-export function linksIn(text) {
-  const found = new Set();
-  for (const match of text.matchAll(/https?:\/\/[^\s<>"'`]+/gi)) {
-    let raw = match[0].replace(/[.,!?;:]+$/, "");
-    while (raw.endsWith(")") && (raw.match(/\)/g)?.length ?? 0) > (raw.match(/\(/g)?.length ?? 0)) {
-      raw = raw.slice(0, -1);
-    }
-    const url = webUrl(raw);
-    if (url) found.add(url);
-  }
-  return [...found];
-}
-
 export function clickableMarkdown(text) {
-  const rewritten = new Set();
   let fence;
   const lines = text.split("\n").map(line => {
     const marker = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
@@ -47,16 +33,11 @@ export function clickableMarkdown(text) {
         if (ticks) return match;
         const url = webUrl(destination);
         if (!url) return match;
-        rewritten.add(url);
-        return `[${label}](${scheme}:${encodeURIComponent(url)})`;
+        const suffix = label === destination ? "" : ` (${destination.replace(/[\\`*_{}\[\]<>]/g, "\\$&")})`;
+        return `[${label}](${scheme}:${encodeURIComponent(url)})${suffix}`;
       });
   });
-  const remaining = linksIn(text).filter(url => !rewritten.has(url));
-  let result = lines.join("\n");
-  if (remaining.length) result += "\n\nOpen links: " + remaining.map((url, i) =>
-    `[${i + 1}](${scheme}:${encodeURIComponent(url)})`
-  ).join(" ");
-  return result;
+  return lines.join("\n");
 }
 
 export default function clickableLinks(pi) {
