@@ -1,6 +1,6 @@
 {
   "name": "omp-clickable-links",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Open assistant web links from omp without dependencies",
   "license": "MIT",
   "omp": {
